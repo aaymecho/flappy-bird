@@ -12,17 +12,26 @@ pygame.display.set_caption('Flappy of the Bird')
 
 
 #vars for game
-floor_scroll = 0
+floor_scroll = 1
 scroll_speed = 3
 fly_status = False
 game_over = False
 pipe_distance = 100
 pipe_timer = 2000
 previous_pipe = pygame.time.get_ticks() - pipe_timer
+score = 0
+passed_pipe = False
+t_font = pygame.font.SysFont('Arial', 50)
+white = (255, 255, 255)
 
 #images loaded
 bg = pygame.image.load(os.path.join('images', 'bg.png'))
 floor = pygame.image.load(os.path.join('images', 'floor.png'))
+
+def display_text(text, t_font, t_color, x, y):
+    image = t_font.render(text, True, t_color)
+    screen.blit(image, (x, y))
+    
 
 
 #bird animation
@@ -114,6 +123,17 @@ while running:
     #draws floor
     screen.blit(floor, (floor_scroll, 768))
 
+    #score counter
+    if (len(pipe_vector) > 0):
+        if (bird_vector.sprites()[0].rect.left > pipe_vector.sprites()[0].rect.left and bird_vector.sprites()[0].rect.right < pipe_vector.sprites()[0].rect.right and passed_pipe == False):
+            passed_pipe = True
+        if (passed_pipe == True):
+            if (bird_vector.sprites()[0].rect.left > pipe_vector.sprites()[0].rect.right):
+                score += 1
+                passed_pipe = False
+    display_text(str(score), t_font, white, width/2, 20)
+    print(score)
+
     #condition for bird touching the ground
     if (flapping_bird.rect.bottom > 769):
         game_over = True
@@ -131,6 +151,8 @@ while running:
             top_pipe = Pipe(width, height/2 + random_height, 1)
             pipe_vector.add(bottom_pipe, top_pipe)
             previous_pipe = current_timer
+            #scroll_speed += 1
+        
 
         #scrolling floor
         floor_scroll -= scroll_speed
