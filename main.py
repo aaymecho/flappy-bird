@@ -16,6 +16,9 @@ floor_scroll = 0
 scroll_speed = 3
 fly_status = False
 game_over = False
+pipe_distance = 100
+pipe_timer = 2000
+previous_pipe = pygame.time.get_ticks() - pipe_timer
 
 #images loaded
 bg = pygame.image.load(os.path.join('images', 'bg.png'))
@@ -71,10 +74,30 @@ class Bird(pygame.sprite.Sprite):
         else:
             self.image = pygame.transform.rotate(self.images[self.index], -90)
 
+class Pipe(pygame.sprite.Sprite):
+    def __init__(self, x, y, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('images/pipe.png')
+        self.rect = self.image.get_rect()
+        #positioning of pipe
+        if (position == 1):
+            self.image = pygame.transform.flip(self.image, False, True)
+            self.rect.bottomleft = [x, y - pipe_distance]
+        if (position == -1):
+            self.rect.topleft = [x, y + pipe_distance]
+    
+    def update(self):
+        self.rect.x -= scroll_speed
+        #deletes pipe when out of bounds
+        if (self.rect.right < 0):
+            self.kill()
+
+
 bird_vector = pygame.sprite.Group()
 flapping_bird = Bird(100, height/2)
 bird_vector.add(flapping_bird)
 
+pipe_vector = pygame.sprite.Group()
 
 running = True
 while running:
@@ -86,20 +109,34 @@ while running:
     #draws vector of birds
     bird_vector.draw(screen)
     bird_vector.update()
-    
+    pipe_vector.draw(screen)
+
     #draws floor
     screen.blit(floor, (floor_scroll, 768))
 
     #condition for bird touching the ground
-    if (flapping_bird.rect.bottom > 768):
+    if (flapping_bird.rect.bottom > 769):
         game_over = True
         fly_status = False
+    #pipe collision detection
+    if (pygame.sprite.groupcollide(bird_vector, pipe_vector, False, False) or flapping_bird.rect.top < 0):
+        game_over = True
 
-    if (game_over == False):
+    if (game_over == False and fly_status == True):
+        #generating pipes
+        current_timer = pygame.time.get_ticks()
+        if (current_timer - previous_pipe > pipe_timer):
+            random_height = random.randint(-100, 100)
+            bottom_pipe = Pipe(width, height/2 + random_height, -1)
+            top_pipe = Pipe(width, height/2 + random_height, 1)
+            pipe_vector.add(bottom_pipe, top_pipe)
+            previous_pipe = current_timer
+
         #scrolling floor
         floor_scroll -= scroll_speed
         if (abs(floor_scroll) > 34):
             floor_scroll = 0
+        pipe_vector.update()
 
     for event in pygame.event.get():
         if (event.type == pygame.QUIT):
