@@ -20,6 +20,10 @@ bird_x = width/3 - bird.get_width()/2
 bird_y = height/2 - bird.get_height()/2
 
 #game globals
+logo = pygame.image.load(os.path.join('images', 'logo.png'))
+play_button = pygame.image.load(os.path.join('images', 'playbtn.png'))
+start = True
+menu = False
 game_over = False
 
 
@@ -29,8 +33,13 @@ game_over = False
 def update_bird():
     global bird_x, bird_y
     screen.blit(bird, (bird_x, bird_y))
-    if (pygame.key.get_pressed()[pygame.K_SPACE]): bird_y -= 8
+    if (bird_y <= 0 or bird_y >= height - bird.get_height()): game_over = True
+    elif (pygame.key.get_pressed()[pygame.K_SPACE]): bird_y -= 8
     else: bird_y += 5
+
+
+#def update_pipe():
+
 
 #updates and resets scrolling background
 def update_background():
@@ -44,14 +53,22 @@ def update_background():
     screen.blit(bg, (bg_x, 0))
     screen.blit(bg, (bg_x2, 0))
 
+#updates and checks if user closes applicaiton
+def check_close():
+    pygame.display.update()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: sys.exit()
 
-
-while True:
+while ~game_over:
     clock.tick(speed)
     update_background()
     update_bird()
-    pygame.display.update()
-    for event in pygame.event.get(): 
-        if event.type == pygame.QUIT: sys.exit()
 
-        
+    #start menu until space is pressed
+    while (start):
+        screen.blit(logo, (width/2 - logo.get_width()/2, height/4 - logo.get_height()))
+        screen.blit(play_button, (width/2 - play_button.get_width()/2, height - 150))
+        if (pygame.key.get_pressed()[pygame.K_SPACE]): start = False;
+        check_close()
+
+    check_close()
