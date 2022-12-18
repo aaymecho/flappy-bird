@@ -1,7 +1,20 @@
 import pygame, os, random
 from pygame.locals import *
+from pygame import mixer
 
 pygame.init()
+mixer.init()
+
+#favicon
+pygame_icon = pygame.image.load('images/bird1.png')
+pygame.display.set_icon(pygame_icon)
+
+#sound vars
+pygame.mixer.Channel(0).play(pygame.mixer.Sound('sounds/flappy.mp3'))
+pygame.mixer.Channel(0).set_volume(0.1)
+
+
+
 
 clock = pygame.time.Clock()
 clock_speed = 60
@@ -129,7 +142,10 @@ while running:
             passed_pipe = True
         if (passed_pipe == True):
             if (bird_vector.sprites()[0].rect.left > pipe_vector.sprites()[0].rect.right):
+                pygame.mixer.Channel(1).play(pygame.mixer.Sound('sounds/coin.mp3'))
+                pygame.mixer.Channel(1).set_volume(0.05)
                 score += 1
+                
                 passed_pipe = False
     display_text(str(score), t_font, white, width/2, 20)
     print(score)
