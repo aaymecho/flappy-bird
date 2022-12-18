@@ -12,7 +12,7 @@ Once you've downloaded and setup the previous process just follow these simple s
 2. Open your workspace, whether it maybe a IDE or the terminal itself and locate your directory
 3. In your terminal run this commmand `python main.py` or `python3 main.py`
 
-##Resources
+## Resources
 These are some of the resources that may come in handy if you'll want to modify any part of the repository:
 1. [Pygame Documentations](https://www.pygame.org/docs/)
 2. [Python Syntax Aid](https://www.learnbyexample.org/python/)
