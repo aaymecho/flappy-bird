@@ -4,7 +4,7 @@ This repoository contains a python based game based off the Original "Flappy Bir
 ## Installation
 A few things are required for you to utilize these files and essentially run the game.
 1. [Python (recommend 3.7.0)](https://www.python.org/downloads/release/python-370/)
-⋅⋅⋅If you run into an error dealing with libmpg123, utilize this method of installation and include it into your path.
+⋅⋅⋅ a. If you run into an error dealing with libmpg123, utilize this method of installation and include it into your path.
 2. Pygame(https://www.pygame.org/download.shtml)
 
 Once you've downloaded and setup the previous process just follow these simple steps to lauch the applicaiton:
