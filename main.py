@@ -40,11 +40,20 @@ white = (255, 255, 255)
 #images loaded
 bg = pygame.image.load(os.path.join('images', 'bg.png'))
 floor = pygame.image.load(os.path.join('images', 'floor.png'))
+play_btn = pygame.image.load(os.path.join('images', 'playbtn.png'))
+logo = pygame.image.load(os.path.join('images', 'logo.png'))
 
 def display_text(text, t_font, t_color, x, y):
     image = t_font.render(text, True, t_color)
     screen.blit(image, (x, y))
     
+
+def restart_game():
+    pipe_vector.empty()
+    flapping_bird.rect.x = 100
+    flapping_bird.rect.y = height/2
+    score = 0
+    return score
 
 
 #bird animation
@@ -114,19 +123,38 @@ class Pipe(pygame.sprite.Sprite):
         if (self.rect.right < 0):
             self.kill()
 
+class Button():
+    def __init__(self, x, y, image):
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+
+    def draw_button(self):
+        clicked = False
+        mouse_pos = pygame.mouse.get_pos()
+
+        
+        if (self.rect.collidepoint(mouse_pos)):
+            if (pygame.mouse.get_pressed()[0] == 1):
+                clicked = True
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+
+        return clicked
+
 
 bird_vector = pygame.sprite.Group()
 flapping_bird = Bird(100, height/2)
 bird_vector.add(flapping_bird)
-
 pipe_vector = pygame.sprite.Group()
+button = Button(width/2 - play_btn.get_width()/2, height/2 - play_btn.get_height()/2, play_btn)
+
 
 running = True
 while running:
     clock.tick(clock_speed)
-
-    #draws background
+    #draws background + logo
     screen.blit(bg, (0,0))
+
 
     #draws vector of birds
     bird_vector.draw(screen)
@@ -148,7 +176,6 @@ while running:
                 
                 passed_pipe = False
     display_text(str(score), t_font, white, width/2, 20)
-    print(score)
 
     #condition for bird touching the ground
     if (flapping_bird.rect.bottom > 769):
@@ -159,6 +186,8 @@ while running:
         game_over = True
 
     if (game_over == False and fly_status == True):
+        # pygame.mixer.Channel(0).play(pygame.mixer.Sound('sounds/flappy.mp3'))
+        # pygame.mixer.Channel(0).set_volume(0.1)
         #generating pipes
         current_timer = pygame.time.get_ticks()
         if (current_timer - previous_pipe > pipe_timer):
@@ -175,6 +204,14 @@ while running:
         if (abs(floor_scroll) > 34):
             floor_scroll = 0
         pipe_vector.update()
+
+    if (fly_status == False):
+        screen.blit(logo, (width/2 - logo.get_width()/2, 100))
+    #check if player loses
+    if (game_over == True):
+        if button.draw_button() == True:
+            game_over = False
+            score = restart_game()
 
     for event in pygame.event.get():
         if (event.type == pygame.QUIT):
